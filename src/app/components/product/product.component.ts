@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { ToastrService } from 'ngx-toastr';
 import { Product } from 'src/app/models/product';
+import { CartService } from 'src/app/services/cart.service';
 import { ProductService } from 'src/app/services/product.service';
 
 //react tarafında axios,fetch ile apiye bağlanıyoruz.
@@ -12,9 +14,12 @@ import { ProductService } from 'src/app/services/product.service';
 })
 export class ProductComponent implements OnInit {
   products: Product[] = [];
+  filterText="";
   dataLoaded = false;
   constructor(private productService: ProductService,
-    private activedRoute: ActivatedRoute
+    private activedRoute: ActivatedRoute, 
+    private toastrService:ToastrService,
+    private cartService:CartService
   ) {}
 
   ngOnInit(): void {
@@ -41,5 +46,13 @@ export class ProductComponent implements OnInit {
       this.products = response.data;
       this.dataLoaded = true; //yüklendiği anda true yapıyoruz
     });
+  }
+
+  addToCart(product:Product){
+    if (product.productId===1) {
+      this.toastrService.error("Bu ürün sepete eklenemez")
+    }else{
+    this.toastrService.success("Sepete eklendi "+product.productName)}
+    this.cartService.addToCart(product)
   }
 }
